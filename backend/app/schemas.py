@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-# Базовая схема (общие поля)
 class RequestBase(BaseModel):
     sender_name: Optional[str] = None
     company_name: Optional[str] = None
@@ -10,11 +9,9 @@ class RequestBase(BaseModel):
     email: str
     full_text: str
 
-# Для создания (симуляция прихода письма)
 class RequestCreate(RequestBase):
     pass
 
-# Для обновления (оператор правит поля или меняет статус)
 class RequestUpdate(BaseModel):
     sender_name: Optional[str] = None
     company_name: Optional[str] = None
@@ -26,7 +23,6 @@ class RequestUpdate(BaseModel):
     status: Optional[str] = None
     operator_comment: Optional[str] = None
 
-# То, что отдаем на Фронтенд (строго по таблице)
 class RequestResponse(RequestBase):
     id: int
     received_at: datetime
