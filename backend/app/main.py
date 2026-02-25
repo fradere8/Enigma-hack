@@ -16,21 +16,16 @@ async def init_tables():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-# --- Эндпоинты ---
-
-# 1. Получить список заявок
 @app.get("/api/requests", response_model=List[RequestResponse])
 async def get_requests(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Request).order_by(Request.received_at.desc()).offset(skip).limit(limit))
     return result.scalars().all()
-
-# 2. Создать заявку (ручное добавление)
 @app.post("/api/requests", response_model=RequestResponse)
 async def create_request(request: RequestCreate, db: AsyncSession = Depends(get_db)):
     new_request = Request(
         **request.model_dump(),
         received_at=datetime.utcnow(),
-        sentiment="Neutral",     # Заглушка, тут будет AI
+        sentiment="Neutral",  
         issue_summary="Требуется анализ...",
         status="New"
     )
@@ -39,7 +34,6 @@ async def create_request(request: RequestCreate, db: AsyncSession = Depends(get_
     await db.refresh(new_request)
     return new_request
 
-# 3. Обновить заявку
 @app.patch("/api/requests/{request_id}", response_model=RequestResponse)
 async def update_request(request_id: int, update_data: RequestUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Request).filter(Request.id == request_id))
@@ -54,8 +48,6 @@ async def update_request(request_id: int, update_data: RequestUpdate, db: AsyncS
     await db.refresh(request)
     return request
 
-# --- СПЕЦИАЛЬНЫЙ ЭНДПОИНТ ДЛЯ ТЕСТА ---
-# Нажми его один раз, чтобы заполнить таблицу красивыми данными как в кейсе
 @app.post("/api/debug/seed_data")
 async def seed_data(db: AsyncSession = Depends(get_db)):
     sample_requests = [
