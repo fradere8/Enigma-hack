@@ -71,3 +71,21 @@
 
 Для запуска требуется установленный **Docker** и **Docker Compose**.
 
+```
+.
+├── backend/            # Исходный код API (FastAPI)
+│   ├── app/
+│   │   ├── models/     # Модели БД (SQLAlchemy)
+│   │   ├── schemas/    # Pydantic схемы
+│   │   ├── services/   # Логика ML и почты
+│   │   └── main.py
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/           # Исходный код интерфейса (React)
+│   ├── src/
+│   ├── Dockerfile
+│   └── package.json
+├── docker-compose.yml  # Оркестрация контейнеров
+└── README.md
+```
+
