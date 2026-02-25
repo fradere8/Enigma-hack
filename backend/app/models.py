@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, JSON
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from datetime import datetime
 from app.database import Base
 
@@ -6,23 +6,25 @@ class Request(Base):
     __tablename__ = "requests"
 
     id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
     
-    # Данные отправителя
+    # 1. Дата поступления
+    received_at = Column(DateTime, default=datetime.utcnow)
+    
+    # 2. Данные заявителя
     sender_name = Column(String, nullable=True)  # ФИО
-    email = Column(String, index=True)
-    phone = Column(String, nullable=True)
-    company = Column(String, nullable=True)      # Объект/Предприятие
+    company_name = Column(String, nullable=True) # Объект / Предприятие
+    phone = Column(String, nullable=True)        # Телефон
+    email = Column(String, index=True)           # Email
     
-    # Технические данные (извлекаются AI)
-    serial_numbers = Column(String, nullable=True) # Можно хранить через запятую
-    device_type = Column(String, nullable=True)    # Тип прибора
+    # 3. Технические данные (извлекает AI)
+    serial_numbers = Column(String, nullable=True) # Заводские номера (строкой через запятую)
+    device_type = Column(String, nullable=True)    # Тип приборов
     
-    # Аналитика
-    sentiment = Column(String, default="Neutral")  # Positive/Neutral/Negative
-    issue_summary = Column(Text, nullable=True)    # Краткая суть проблемы
+    # 4. Аналитика (AI)
+    sentiment = Column(String, default="Neutral")  # Тональность: Positive, Neutral, Negative
+    issue_summary = Column(Text, nullable=True)    # Суть вопроса (кратко)
     
-    # Полный текст и статус
-    full_text = Column(Text)                       # Текст письма
-    status = Column(String, default="New")         # New, In Progress, Closed
-    admin_response = Column(Text, nullable=True)   # Черновик или финальный ответ
+    # 5. Обработка
+    full_text = Column(Text)                       # Полный текст письма (для модального окна)
+    status = Column(String, default="New")         # Статус: New, Processed
+    operator_comment = Column(Text, nullable=True) # Ответ оператора / Черновик

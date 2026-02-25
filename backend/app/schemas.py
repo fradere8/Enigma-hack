@@ -1,28 +1,41 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, JSON
+from pydantic import BaseModel
 from datetime import datetime
-from app.database import Base
+from typing import Optional
 
-class Request(Base):
-    __tablename__ = "requests"
+# Базовая схема (общие поля)
+class RequestBase(BaseModel):
+    sender_name: Optional[str] = None
+    company_name: Optional[str] = None
+    phone: Optional[str] = None
+    email: str
+    full_text: str
 
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    
-    # Данные отправителя
-    sender_name = Column(String, nullable=True)  # ФИО
-    email = Column(String, index=True)
-    phone = Column(String, nullable=True)
-    company = Column(String, nullable=True)      # Объект/Предприятие
-    
-    # Технические данные (извлекаются AI)
-    serial_numbers = Column(String, nullable=True) # Можно хранить через запятую
-    device_type = Column(String, nullable=True)    # Тип прибора
-    
-    # Аналитика
-    sentiment = Column(String, default="Neutral")  # Positive/Neutral/Negative
-    issue_summary = Column(Text, nullable=True)    # Краткая суть проблемы
-    
-    # Полный текст и статус
-    full_text = Column(Text)                       # Текст письма
-    status = Column(String, default="New")         # New, In Progress, Closed
-    admin_response = Column(Text, nullable=True)   # Черновик или финальный ответ
+# Для создания (симуляция прихода письма)
+class RequestCreate(RequestBase):
+    pass
+
+# Для обновления (оператор правит поля или меняет статус)
+class RequestUpdate(BaseModel):
+    sender_name: Optional[str] = None
+    company_name: Optional[str] = None
+    phone: Optional[str] = None
+    serial_numbers: Optional[str] = None
+    device_type: Optional[str] = None
+    sentiment: Optional[str] = None
+    issue_summary: Optional[str] = None
+    status: Optional[str] = None
+    operator_comment: Optional[str] = None
+
+# То, что отдаем на Фронтенд (строго по таблице)
+class RequestResponse(RequestBase):
+    id: int
+    received_at: datetime
+    serial_numbers: Optional[str]
+    device_type: Optional[str]
+    sentiment: str
+    issue_summary: Optional[str]
+    status: str
+    operator_comment: Optional[str]
+
+    class Config:
+        from_attributes = True
