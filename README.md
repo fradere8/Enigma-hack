@@ -24,7 +24,7 @@
 *   **AI/ML (План):** 
     *   *Классификация и тональность:* RuBERT-tiny2 (быстрая и легкая).
     *   *Извлечение сущностей (NER):* SpaCy / Natasha.
-    *   *Генерация ответов:* GigaChat API / YandexGPT (или Open Source LLM через Ollama).
+    *   *Генерация ответов:*  Open Source LLM через Ollama.
 *   **DevOps:** Docker, Docker Compose.
 
 ---
