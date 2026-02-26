@@ -1,19 +1,5 @@
 services:
-  # Наше приложение FastAPI
-  backend:
-    build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - ./backend:/app
-    ports:
-      - "8000:8000"
-    environment:
-      # Важно: здесь хост 'db' совпадает с именем сервиса базы ниже
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/support_db
-    depends_on:
-      - db
-
-  # База данных PostgreSQL
+  # 1. База данных (PostgreSQL)
   db:
     image: postgres:15
     volumes:
@@ -24,6 +10,39 @@ services:
       - POSTGRES_DB=support_db
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Бэкенд (FastAPI)
+  backend:
+    build: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      # Важно: тут мы говорим использовать Postgres внутри Докера
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/support_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. Фронтенд (React)
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Чтобы работало автообновление на Windows
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
