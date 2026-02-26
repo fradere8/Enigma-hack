@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 
 function App() {
-  // Состояние для хранения записей (изначально пусто)
+
   const [entries, setEntries] = useState([]);
 
-  // Состояния для полей формы добавления
   const [date, setDate] = useState('');
   const [fullName, setFullName] = useState('');
   const [object, setObject] = useState('');
@@ -12,7 +11,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [serialNumbers, setSerialNumbers] = useState('');
 
-  // Генерация следующего ID (в реальном приложении ID будет приходить с бэкенда)
+  
   const nextId = entries.length ? Math.max(...entries.map(e => e.id)) + 1 : 1;
 
   // Обработчик добавления новой записи
@@ -31,8 +30,7 @@ function App() {
       email,
       serialNumbers,
     };
-    setEntries([...entries, newEntry]);
-    // Очистка формы
+    setEntries([...entries, newEntry])
     setDate('');
     setFullName('');
     setObject('');
@@ -41,7 +39,6 @@ function App() {
     setSerialNumbers('');
   };
 
-  // Экспорт данных в CSV
   const exportToCSV = () => {
     const headers = ['Дата', 'ФИО', 'Объект', 'Телефон', 'Email', 'Заводские номера'];
     const rows = entries.map(entry => [
@@ -116,7 +113,7 @@ function App() {
         </table>
       </div>
 
-      {/* Кнопка экспорта в CSV */}
+     
       <button onClick={exportToCSV} style={{ padding: '8px 16px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
         Экспорт в CSV
       </button>
